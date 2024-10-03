@@ -1,0 +1,18 @@
+# IDE
+.bsp
+.idea
+
+# Build artefacts
+/project/target/
+/project/project/
+/target/
+/output/
+# Folders for local testing
+/testData/
+
+# Other
+*.class
+*.log
+
+# Scala worksheets
+*.sc

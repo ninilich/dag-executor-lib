@@ -1,0 +1,62 @@
+<configuration>
+    <!--
+    This configuration defines the log pattern and behavior for console logging in Logback.
+
+    <pattern> tags are used to format each log message with specific details.
+        - %d{yyyy-MM-dd HH:mm:ss.SSS} : Includes the date and time of the log event with millisecond precision.
+          The format 'yyyy-MM-dd HH:mm:ss.SSS' produces timestamps like '2024-10-11 14:23:45.678'.
+        - %-5level : Outputs the log level (e.g., INFO, DEBUG, ERROR). The %-5 ensures the level takes up
+          a minimum width of 5 characters, which helps align the output vertically when levels vary in length.
+        - [%thread] : Logs the name of the thread that generated the log event in square brackets,
+          showing which thread handled the log event (e.g., [main] or [Executor-1]).
+        - %X{DagTaskName} : Logs a custom attribute (in this case, the MDC attribute "DagTaskName") if it exists.
+          This can be useful for tracking specific getTasks or data points in complex applications.
+        - [%F:%L] : Logs the filename (%F) and line number (%L) where the logging event was triggered,
+          useful for debugging by showing the source location within the code.
+        - %msg : Outputs the log message itself.
+        - %n : Inserts a newline after each log entry for better readability.
+
+    Example log output:
+    2024-10-11 14:23:45.678 INFO  [main] [MyFile.scala:42] This is an info message
+    2024-10-11 14:23:45.680 ERROR [pool-53-thread-1] [OtherFile.scala:87] This is an error message
+
+    This output format helps identify the timestamp, log level, thread, file and line location, and message content
+    in a structured format. The newline after each message (%n) ensures each log event starts on a new line.
+    -->
+
+    <!--
+    Set the root logger level to ERROR to minimize output from other libraries and focus only on errors
+    unless overridden by specific loggers below.
+    -->
+    <root level="ERROR">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!--
+    Suppresses Logback's internal messages by disabling the status listener that would normally output
+    Logback's own status and error information.
+    -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <!--
+    Define a console appender named "STDOUT" to handle output to the console.
+    The <encoder> defines the log pattern using the elements explained above.
+    -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%thread%X{DagTaskName}] [%F:%L] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+    Set a custom log level for the application's main package "com.ninilich" to capture INFO level logs and above.
+    Setting "additivity" to false prevents logs from this logger from being passed up to the root logger, avoiding duplicate output.
+    -->
+    <logger name="com.github.ninilich" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <!-- Suppress internal logging for Logback components to avoid unnecessary output -->
+    <logger name="ch.qos.logback" level="ERROR" />
+
+</configuration>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Set the root logger level to OFF to disable all logs during testing -->
+    <root level="OFF">
+        <!-- No appenders are defined, so no logs will be processed -->
+    </root>
+</configuration>

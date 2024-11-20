@@ -1,6 +1,6 @@
-package com.github.ninilich.dagexecutor.examples
+package org.ninilich.dagexecutor.examples
 
-import com.github.ninilich.dagexecutor.{DAG, Runnable}
+import org.ninilich.dagexecutor.{DAG, RunnableDAGTask}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.util.Random
@@ -14,7 +14,7 @@ object Example2 extends App {
 
   /** Dummy class to represent a task
     */
-  class SomeTask(timeout: Int) extends Runnable[Result] {
+  class SomeTask(timeout: Int) extends RunnableDAGTask[Result] {
 
     override def run(): Option[Result] = {
       logger.info(s"Working...") // logging

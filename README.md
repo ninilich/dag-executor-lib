@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `dagexecutor` library provides a robust implementation of a Directed Acyclic Graph (DAG) for managing and executing tasks in a flexible and efficient manner. This library allows users to define tasks with dependencies, execute them in the correct order, and handle any exceptions that may arise during execution.
+The `dagexecutor` library provides an implementation of a Directed Acyclic Graph (DAG) for managing and executing tasks in a flexible and efficient manner. This library allows users to define tasks with dependencies, execute them in the correct order, and handle any exceptions that may arise during execution.
 
 ## Features
 
@@ -16,29 +16,28 @@ The `dagexecutor` library provides a robust implementation of a Directed Acyclic
 ## Limitations
 
 - all tasks should return the results with the same type or ```None```.
-- needs to have ```implicit logger: Logger``` in application.
 
 ## **API Reference**
 
 ### **Constructor**
 ```scala
-def this(maxThreads: Int = 0, awaitTime: Duration = Duration.Inf)(implicit logger: Logger)
+def this(maxThreads: Int = 0, awaitTime: Duration = Duration.Inf, )(implicit logger: Logger)
 ```
 - **`maxThreads`** *(Int)*: Maximum threads for concurrent task execution.
     - `0` uses the global execution context.
     - Values > `0` specify a fixed thread pool size.
 - **`awaitTime`** *(Duration)*: Maximum time to wait for task execution. Default: `Duration.Inf` (no timeout).
-- **`logger`** *(Logger)*: Logger for task execution events.
+- **`DagTaskName`** *(String)*: key for Mapped Diagnostic Context (MDC). Default: `DagTaskName`
 
 ### **Methods**
 #### **addTask**
 Adds a task to the DAG.
 ```scala
-def addTask(name: String, task: Runnable[T], dependencyNames: List[String] = List.empty): Node
+def addTask(name: String, task: RunnableDAGTask[T], dependencyNames: List[String] = List.empty): Node
 ```
 - **Parameters**:
     - **`name`** *(String)*: Unique task name.
-    - **`task`** *(Runnable[T])*: The task to execute.
+    - **`task`** *(RunnableDAGTask[T],)*: The task to execute.
     - **`dependencyNames`** *(List[String])*: Names of tasks this task depends on.
 
 - **Returns**:
@@ -112,11 +111,11 @@ libraryDependencies += "com.ninilich" %% "dagexecutor" % version // check the la
 
 > It is recommended to configure logger using  ```logback.xml``` file, similar to the setup in this repository, to include task name information 
 > (`DagTaskName`) in the logs (which is especially important when tasks are executed concurrently). 
-> Additionally, configuring the logger to include the file name and line number in the log entries will help with tracing and debugging 
-> the task execution flow more effectively.
+> Additionally, configuring the logger to include the Mapped Diagnostic Context (MDC) with key `DagTaskName` (default value, could be redefined)
+> during instantiating DAG) will help with tracing and debugging the task execution flow more effectively. E.g.
 > ```xml
 > <encoder>
->    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%thread%X{DagTaskName}] [%F:%L] %msg%n</pattern>
+>    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%X{DagTaskName}] [%F:%L] %msg%n</pattern>
 > </encoder>
 > ```
 
@@ -131,20 +130,17 @@ import org.slf4j.{Logger, LoggerFactory}
 import scala.concurrent.duration.Duration
 
 // Define your tasks
-val task1: Runnable = new Runnable[String] {
+val task1: RunnableDAGTask = new RunnableDAGTask[String] {
   override def run(): Option[String] = {
     println("Some text")
   }
 }
 
-val task2: Runnable = new Runnable[String] {
+val task2: RunnableDAGTask = new RunnableDAGTask[String] {
   override def run(): Option[String] = {
     Some("Some text")
   }
 }
-
-// Create a logger instance
-implicit val logger: Logger = LoggerFactory.getLogger("DAGExecutor")
 
 // Create a DAG instance
 val dag = new DAG[String](maxThreads = 4, awaitTime = Duration(10, "seconds"))
@@ -169,4 +165,4 @@ results.foreach { case TaskExecutionResult(name, success, duration, output) =>
 println(dag.getTasks)
 
 ```
-For more examples - see [src/main/scala/com/ninilich/dagexecutor/examples](src/main/scala/com/github/ninilich/dagexecutor/examples)
+For more examples - see [src/main/scala/com/ninilich/dagexecutor/examples](src/main/scala/org/ninilich/dagexecutor/examples)

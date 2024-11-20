@@ -1,8 +1,8 @@
-package com.github.ninilich.dagexecutor.examples
+package org.ninilich.dagexecutor.examples
 
-import com.github.ninilich.dagexecutor.{DAG, Runnable}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.sum
+import org.ninilich.dagexecutor.{DAG, RunnableDAGTask}
 import org.slf4j.{Logger, LoggerFactory}
 
 /** Example with getTasks, which return Unit
@@ -20,7 +20,7 @@ object Example3 extends App {
 
   /** Dummy Spark job
     */
-  class SparkJob(rowNumber: Int)(implicit spark: SparkSession) extends Runnable[Unit] {
+  class SparkJob(rowNumber: Int)(implicit spark: SparkSession) extends RunnableDAGTask[Unit] {
     override def run(): Option[Unit] = {
       // Define the schema explicitly
       val df = spark.range(0, rowNumber)

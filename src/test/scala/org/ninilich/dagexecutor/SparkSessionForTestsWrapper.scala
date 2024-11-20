@@ -1,4 +1,4 @@
-package com.github.ninilich.dagexecutor
+package org.ninilich.dagexecutor
 
 import org.apache.spark.sql.SparkSession
 import org.scalatest.BeforeAndAfterAll

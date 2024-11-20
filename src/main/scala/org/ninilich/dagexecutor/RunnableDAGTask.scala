@@ -1,11 +1,11 @@
-package com.github.ninilich.dagexecutor
+package org.ninilich.dagexecutor
 
 import scala.language.implicitConversions
 
 /** Trait representing a task in a Directed Acyclic Graph (DAG). Each task defines a specific unit of work that can be
   * executed within the DAG. The execution order of getTasks is determined by the dependencies within the graph.
   */
-trait Runnable[T] {
+trait RunnableDAGTask[T] {
 
   /** Executes the task's logic. This method is expected to be implemented by concrete task classes. It should contain
     * the code that performs the task's unit of work.

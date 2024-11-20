@@ -1,4 +1,4 @@
-package com.github.ninilich.dagexecutor
+package org.ninilich.dagexecutor
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -9,9 +9,9 @@ class DAGGeneralTest extends AnyFlatSpec with Matchers {
   private var executionOrder = List.empty[Int]
   implicit val logger: Logger = LoggerFactory.getLogger(getClass.getName)
 
-  /** Mock implementation of Runnable for testing
+  /** Mock implementation of RunnableDAGTask for testing
     */
-  private class MockDAGTask(val duration: Long, val flag: Int = 0) extends Runnable[Long] {
+  private class MockDAGTask(val duration: Long, val flag: Int = 0) extends RunnableDAGTask[Long] {
     override def run(): Option[Long] = {
       Thread.sleep(duration) // Simulate task execution time
       executionOrder = flag :: executionOrder

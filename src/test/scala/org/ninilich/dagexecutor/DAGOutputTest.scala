@@ -1,4 +1,4 @@
-package com.github.ninilich.dagexecutor
+package org.ninilich.dagexecutor
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -9,7 +9,7 @@ class DAGOutputTest extends AnyFunSuite with Matchers {
   type Result = Map[String, String]
 
   // Dummy class to represent a task
-  private class MockSomeTask(text: String) extends Runnable[Map[String, String]] {
+  private class MockSomeTask(text: String) extends RunnableDAGTask[Map[String, String]] {
     override def run(): Option[Map[String, String]] = Some(Map(text -> text))
   }
 

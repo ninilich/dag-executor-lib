@@ -1,4 +1,4 @@
-package com.github.ninilich.dagexecutor
+package org.ninilich.dagexecutor
 
 import org.apache.spark.sql.functions.{col, lit, sum}
 import org.scalatest.funsuite.AnyFunSuite
@@ -10,9 +10,9 @@ class DAGSparkTest extends AnyFunSuite with Matchers with SparkSessionForTestsWr
   implicit val logger: Logger = LoggerFactory.getLogger(getClass.getName)
   private val csvFilePath = getClass.getResource("/testData.csv").getPath
 
-  /** Mock implementation of Runnable for testing
+  /** Mock implementation of RunnableDAGTask for testing
     */
-  private class MockSparkTask(value: Long) extends Runnable[Long] {
+  private class MockSparkTask(value: Long) extends RunnableDAGTask[Long] {
     override def run(): Option[Long] = {
       val df = spark.read
         .option("header", "true")

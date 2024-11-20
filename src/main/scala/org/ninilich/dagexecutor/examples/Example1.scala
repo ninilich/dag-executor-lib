@@ -1,6 +1,6 @@
-package com.github.ninilich.dagexecutor.examples
+package org.ninilich.dagexecutor.examples
 
-import com.github.ninilich.dagexecutor.{DAG, Runnable}
+import org.ninilich.dagexecutor.{DAG, RunnableDAGTask}
 import org.slf4j.{Logger, LoggerFactory}
 
 /** Example with getTasks, which return Unit
@@ -11,7 +11,7 @@ object Example1 extends App {
 
   /** Dummy class to represent a task
     */
-  class SomeTask(timeout: Int) extends Runnable[Unit] {
+  class SomeTask(timeout: Int) extends RunnableDAGTask[Unit] {
 
     override def run(): Option[Unit] = {
       logger.info(s"Working...") // logging

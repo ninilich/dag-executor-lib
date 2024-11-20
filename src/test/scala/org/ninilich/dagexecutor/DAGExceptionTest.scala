@@ -1,4 +1,4 @@
-package com.github.ninilich.dagexecutor
+package org.ninilich.dagexecutor
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -19,15 +19,15 @@ class DAGExceptionTest extends AnyFlatSpec with Matchers {
     sw.toString
   }
 
-  /** Mock implementation of Runnable for testing
+  /** Mock implementation of RunnableDAGTask for testing
     */
-  private class MockDAGTask(val duration: Long) extends Runnable[Long] {
+  private class MockDAGTask(val duration: Long) extends RunnableDAGTask[Long] {
     override def run(): Option[Long] = Some(duration)
   }
 
-  /** Mock implementation of Runnable for testing exceptions
+  /** Mock implementation of RunnableDAGTask for testing exceptions
     */
-  private class FailingDAGTask extends Runnable[Unit] {
+  private class FailingDAGTask extends RunnableDAGTask[Unit] {
     override def run(): Option[Unit] = {
       throw new RuntimeException(s"This is a test exception") // Simulate a failure
     }

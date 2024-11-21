@@ -1,6 +1,6 @@
 # Contributing to DAG Runner Library
 
-Thank you for your interest in contributing to the DAG Runner Library! We welcome contributions from the community. Please follow the guidelines below to ensure a smooth contribution process.
+Thank you for your interest in contributing to the DAG Executor Library! We welcome contributions from the community. Please follow the guidelines below to ensure a smooth contribution process.
 
 ## How to Contribute
 

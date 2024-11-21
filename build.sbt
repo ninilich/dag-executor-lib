@@ -1,8 +1,6 @@
 import sbt.Keys.libraryDependencies
 
 name := "dag-executor"
-organization := "org.ninilich"
-homepage := Some(url("https://github.com/ninilich/dag-executor-lib"))
 
 scalaVersion := "2.12.15"
 Test / parallelExecution := false // need to prevent conflicts using SparkSession in tests
@@ -13,18 +11,6 @@ Compile / fork := true
 
 // In SBT: switching off the [info] prefixes in logs:
 outputStrategy := Some(StdoutOutput)
-
-// for publishing
-publishMavenStyle := true
-pomIncludeRepository := { _ => false }
-publishTo := Some("GitHub ninilich Apache Maven Packages" at "https://maven.pkg.github.com/ninilich/PACKAGE")
-credentials += Credentials(
-  "GitHub Package Registry",
-  "maven.pkg.github.com",
-  "USERNAME",
-  System.getenv("GITHUB_TOKEN")
-)
-
 
 // libraryDependencies both for server and local run
 libraryDependencies ++= Seq(

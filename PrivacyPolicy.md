@@ -1,10 +1,10 @@
 # Privacy Policy
 
-**Effective Date:** [Insert Date]
+**Effective Date:** 23.11.2024
 
 ## Introduction
 
-At [Your Project Name] ("we," "us," or "our"), we value your privacy. This Privacy Policy outlines our practices regarding the collection, use, and disclosure of information when you use our application or website.
+At out project ("we," "us," or "our"), we value your privacy. This Privacy Policy outlines our practices regarding the collection, use, and disclosure of information when you use our application or website.
 
 ## Information We Do Not Collect
 

@@ -1,0 +1,39 @@
+<configuration>
+    <!--
+    This configuration defines the log pattern and behavior for console logging in Logback.
+
+    Set the root logger level to ERROR to minimize output from other libraries and focus only on errors
+    unless overridden by specific loggers below.
+    -->
+    <root level="ERROR">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!--
+    Suppresses Logback's internal messages by disabling the status listener that would normally output
+    Logback's own status and error information.
+    -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <!--
+    Define a console appender named "STDOUT" to handle output to the console.
+    The <encoder> defines the log pattern using the elements explained above.
+    -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%X{DagTaskName}] [%F:%L] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+    Set a custom log level for the application's main package to capture INFO level logs and above.
+    Setting "additivity" to false prevents logs from this logger from being passed up to the root logger, avoiding duplicate output.
+    -->
+    <logger name="org.ninilich" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <!-- Suppress internal logging for Logback components to avoid unnecessary output -->
+    <logger name="ch.qos.logback" level="ERROR" />
+
+</configuration>

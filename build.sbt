@@ -12,6 +12,10 @@ Compile / fork := true
 // In SBT: switching off the [info] prefixes in logs:
 outputStrategy := Some(StdoutOutput)
 
+// for publishing
+organization := "org.ninilich"
+publishMavenStyle := true
+
 // libraryDependencies both for server and local run
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.5.12" % "provided",

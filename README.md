@@ -17,11 +17,80 @@ The `dagexecutor` library provides an implementation of a Directed Acyclic Graph
 
 - all tasks should return the results with the same type or ```None```.
 
+
+## Installation
+
+To use the `dag-executor` library, include it in your project dependencies. If you are using SBT, add the following line to your `build.sbt`:
+
+```scala
+resolvers += "GitHub Packages" at "https://maven.pkg.github.com/ninilich/dag-executor"
+
+libraryDependencies += "com.github.ninilich" %% "dag-executor_2.12" % version // check the latest version is "0.1.0"
+```
+
+
+## Usage
+
+> It is recommended to configure logger (if you need it) using  ```logback.xml``` file, similar to the setup in this repository, to include task name information
+> (`DagTaskName`) in the logs (which is especially important when tasks are executed concurrently).
+> Additionally, configuring the logger to include the Mapped Diagnostic Context (MDC) with key `DagTaskName` (default value, could be redefined)
+> during instantiating DAG) will help with tracing and debugging the task execution flow more effectively. E.g.
+> ```xml
+> <encoder>
+>    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%X{DagTaskName}] [%F:%L] %msg%n</pattern>
+> </encoder>
+> ```
+
+**Full example**
+
+```scala
+import com.github.ninilich.dagexecutor.{DAG, RunnableDAGTask, TaskExecutionResult}
+import scala.concurrent.duration.Duration
+
+// Define your tasks
+val task1 = new RunnableDAGTask[String] {
+  override def run(): Option[String] = {
+    println("Some text")
+  }
+}
+
+val task2 = new RunnableDAGTask[String] {
+  override def run(): Option[String] = {
+    Some("Some text")
+  }
+}
+
+// Create a DAG instance
+val dag = new DAG[String](maxThreads = 4, awaitTime = Duration(10, "seconds"))
+
+// Add tasks with dependencies
+dag.addTask("Task1", task1)
+dag.addTask("Task2", task2, dependencyNames = List("Task1"))
+
+// Execute the DAG
+val results = dag.execute()
+
+// Print the results
+results.foreach { case TaskExecutionResult(name, success, duration, output) =>
+  if (success) {
+    println(s"Executed $name in $duration seconds with result: $output")
+  } else {
+    println(s"Task $name failed")
+  }
+}
+
+// Print the DAG tasks and their dependencies
+println(dag.getTasks)
+
+```
+For more examples - see [src/main/scala/com/ninilich/dagexecutor/examples](src/main/scala/com/github/ninilich/dagexecutor/examples)
+
+
 ## **API Reference**
 
 ### **Constructor**
 ```scala
-def this(maxThreads: Int = 0, awaitTime: Duration = Duration.Inf, )(implicit logger: Logger)
+def this(maxThreads: Int = 0, awaitTime: Duration = Duration.Inf, mdcKey: String = "DagTaskName")
 ```
 - **`maxThreads`** *(Int)*: Maximum threads for concurrent task execution.
     - `0` uses the global execution context.
@@ -96,75 +165,3 @@ The `TaskExecutionResult` class contains the following information:
 - **`success`** *(Boolean)*: Whether the task was executed.
 - **`duration`** *(Long)*: Execution time in seconds.
 - **`output`** *(Option[T])*: The task's output, if any.
-
-
-## Installation
-
-To use the `dagexecutor` library, include it in your project dependencies. If you are using SBT, add the following line to your `build.sbt`:
-
-```scala
-resolvers += "GitHub Packages" at "https://maven.pkg.github.com/ninilich/dag-executor"
-
-libraryDependencies += "com.github.ninilich" %% "dag-executor_2.12" % version // check the latest version is "0.1.0"
-```
-
-
-## Usage
-
-> It is recommended to configure logger using  ```logback.xml``` file, similar to the setup in this repository, to include task name information 
-> (`DagTaskName`) in the logs (which is especially important when tasks are executed concurrently). 
-> Additionally, configuring the logger to include the Mapped Diagnostic Context (MDC) with key `DagTaskName` (default value, could be redefined)
-> during instantiating DAG) will help with tracing and debugging the task execution flow more effectively. E.g.
-> ```xml
-> <encoder>
->    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%X{DagTaskName}] [%F:%L] %msg%n</pattern>
-> </encoder>
-> ```
-
-
- 
-**Full example**
-
-```scala
-// imports
-
-import org.slf4j.{Logger, LoggerFactory}
-import scala.concurrent.duration.Duration
-
-// Define your tasks
-val task1: RunnableDAGTask = new RunnableDAGTask[String] {
-  override def run(): Option[String] = {
-    println("Some text")
-  }
-}
-
-val task2: RunnableDAGTask = new RunnableDAGTask[String] {
-  override def run(): Option[String] = {
-    Some("Some text")
-  }
-}
-
-// Create a DAG instance
-val dag = new DAG[String](maxThreads = 4, awaitTime = Duration(10, "seconds"))
-
-// Add tasks with dependencies
-dag.addTask("Task1", task1)
-dag.addTask("Task2", task2, dependencyNames = List("Task1"))
-
-// Execute the DAG
-val results = dag.execute()
-
-// Print the results
-results.foreach { case TaskExecutionResult(name, success, duration, output) =>
-  if (success) {
-    println(s"Executed $name in $duration seconds with result: $output")
-  } else {
-    println(s"Task $name failed")
-  }
-}
-
-// Print the DAG tasks and their dependencies
-println(dag.getTasks)
-
-```
-For more examples - see [src/main/scala/com/ninilich/dagexecutor/examples](src/main/scala/com/github/ninilich/dagexecutor/examples)

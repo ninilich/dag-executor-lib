@@ -11,6 +11,7 @@ The `dagexecutor` library provides an implementation of a Directed Acyclic Graph
 - **Flexibility**: Execute only specific tasks of DAG keeping all dependencies.
 - **Error Handling**: Built-in error handling for task execution failures. Propagates the original (initial) exception upwards for easier analysis.
 - **DAG Structure printing**: Prints the info about structure of the DAG for better understanding and debugging.
+- **Implicit conversion**: Implicit conversion of the result of the task: `T -> Option[T]`, `None -> Option[T]` and `Unit -> Option[T]` for clearer code 
 
 
 ## Limitations

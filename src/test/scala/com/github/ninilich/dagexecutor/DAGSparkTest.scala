@@ -1,4 +1,4 @@
-package org.ninilich.dagexecutor
+package com.github.ninilich.dagexecutor
 
 import org.apache.spark.sql.functions.{col, lit, sum}
 import org.scalatest.funsuite.AnyFunSuite

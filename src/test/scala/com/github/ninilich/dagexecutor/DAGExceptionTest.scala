@@ -1,4 +1,4 @@
-package org.ninilich.dagexecutor
+package com.github.ninilich.dagexecutor
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

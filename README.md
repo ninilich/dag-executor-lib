@@ -103,7 +103,9 @@ The `TaskExecutionResult` class contains the following information:
 To use the `dagexecutor` library, include it in your project dependencies. If you are using SBT, add the following line to your `build.sbt`:
 
 ```scala
-libraryDependencies += "com.ninilich" %% "dagexecutor" % version // check the latest version
+resolvers += "GitHub Packages" at "https://maven.pkg.github.com/ninilich/dag-executor"
+
+libraryDependencies += "com.github.ninilich" %% "dag-executor_2.12" % version // check the latest version is "0.1.0"
 ```
 
 
@@ -165,4 +167,4 @@ results.foreach { case TaskExecutionResult(name, success, duration, output) =>
 println(dag.getTasks)
 
 ```
-For more examples - see [src/main/scala/com/ninilich/dagexecutor/examples](src/main/scala/org/ninilich/dagexecutor/examples)
+For more examples - see [src/main/scala/com/ninilich/dagexecutor/examples](src/main/scala/com/github/ninilich/dagexecutor/examples)

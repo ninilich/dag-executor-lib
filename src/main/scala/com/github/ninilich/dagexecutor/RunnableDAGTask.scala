@@ -1,4 +1,4 @@
-package org.ninilich.dagexecutor
+package com.github.ninilich.dagexecutor
 
 import scala.language.implicitConversions
 

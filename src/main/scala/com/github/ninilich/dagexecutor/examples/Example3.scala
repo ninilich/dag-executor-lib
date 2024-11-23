@@ -1,8 +1,8 @@
-package org.ninilich.dagexecutor.examples
+package com.github.ninilich.dagexecutor.examples
 
+import com.github.ninilich.dagexecutor.{DAG, RunnableDAGTask}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.sum
-import org.ninilich.dagexecutor.{DAG, RunnableDAGTask}
 import org.slf4j.{Logger, LoggerFactory}
 
 /** Example with getTasks, which return Unit

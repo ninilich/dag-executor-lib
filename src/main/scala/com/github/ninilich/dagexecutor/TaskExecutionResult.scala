@@ -1,4 +1,4 @@
-package org.ninilich.dagexecutor
+package com.github.ninilich.dagexecutor
 
 /** Represents the result of a task execution.
   *

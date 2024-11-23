@@ -1,27 +1,35 @@
-package org.ninilich.dagexecutor.examples
+package com.github.ninilich.dagexecutor.examples
 
-import org.ninilich.dagexecutor.{DAG, RunnableDAGTask}
+import com.github.ninilich.dagexecutor.{DAG, RunnableDAGTask}
 import org.slf4j.{Logger, LoggerFactory}
 
-/** Example with getTasks, which return Unit
-  */
-object Example1 extends App {
+import scala.util.Random
 
-  implicit val logger: Logger = LoggerFactory.getLogger(getClass)
+/** Example with getTasks, which return Map[String, String]
+  */
+object Example2 extends App {
+  implicit val logger: Logger = LoggerFactory.getLogger(getClass.getName)
+
+  private type Result = Map[String, String]
 
   /** Dummy class to represent a task
     */
-  class SomeTask(timeout: Int) extends RunnableDAGTask[Unit] {
+  class SomeTask(timeout: Int) extends RunnableDAGTask[Result] {
 
-    override def run(): Option[Unit] = {
+    override def run(): Option[Result] = {
       logger.info(s"Working...") // logging
       Thread.sleep(timeout) // simulating some work
+      def generateRandomString(length: Int): String = {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        (1 to length).map(_ => chars(Random.nextInt(chars.length))).mkString
+      }
+      Some(Map(generateRandomString(10) -> generateRandomString(10)))
     }
   }
 
   logger.info("Starting Example1.")
 
-  val dag = new DAG[Unit]()
+  val dag = new DAG[Result]()
 
   val job1 = new SomeTask(100)
   val job2 = new SomeTask(200)
@@ -40,7 +48,11 @@ object Example1 extends App {
 
   logger.info(dag.getTasks.toString()) // Print the getTasks of the DAG
 
+  // Execute the DAG and get the results
   val executionResult = dag.execute()
-  executionResult.foreach(res => logger.info(s"Execution if task '${res.taskName}' took ${res.taskDurationSec} sec."))
+
+  // Using taskExecutionResults for something
+  logger.info("Printing task execution results:")
+  executionResult.foreach(res => println(s"${res.taskName}: ${res.taskOutput.getOrElse("")}"))
 
 }

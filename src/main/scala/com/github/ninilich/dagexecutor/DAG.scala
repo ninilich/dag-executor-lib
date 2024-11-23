@@ -1,4 +1,4 @@
-package org.ninilich.dagexecutor
+package com.github.ninilich.dagexecutor
 
 import org.slf4j.MDC
 import java.time.Instant

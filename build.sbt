@@ -1,6 +1,7 @@
 import sbt.Keys.libraryDependencies
 
 name := "dag-executor"
+version := "0.1.0"
 
 scalaVersion := "2.12.15"
 Test / parallelExecution := false // need to prevent conflicts using SparkSession in tests
@@ -11,10 +12,6 @@ Compile / fork := true
 
 // In SBT: switching off the [info] prefixes in logs:
 outputStrategy := Some(StdoutOutput)
-
-// for publishing
-organization := "org.ninilich"
-publishMavenStyle := true
 
 // libraryDependencies both for server and local run
 libraryDependencies ++= Seq(
@@ -29,3 +26,11 @@ libraryDependencies ++= Seq(
 Compile / run := Defaults
   .runTask(Compile / fullClasspath, Compile / run / mainClass, Compile / run / runner)
   .evaluated
+
+// for publishing
+organization := "com.github.ninilich"
+publishMavenStyle := true
+ThisBuild / versionScheme := Some("semver-spec")
+githubOwner := "ninilich"
+githubRepository := "dag-executor-lib"
+githubTokenSource := TokenSource.GitConfig("github.token")

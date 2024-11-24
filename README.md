@@ -2,21 +2,47 @@
 
 ## Overview
 
-The `dagexecutor` library provides an implementation of a Directed Acyclic Graph (DAG) for managing and executing tasks in a flexible and efficient manner. This library allows users to define tasks with dependencies, execute them in the correct order, and handle any exceptions that may arise during execution.
+The `dag-executor` library provides a simple implementation of a Directed Acyclic Graph (DAG) for 
+managing and executing tasks in a flexible and efficient manner. This library allows users to define tasks with dependencies, execute them in the correct order, and handle any exceptions that may arise during execution.
+
+## Use case
+Sometimes there is a need to execute interrelated tasks <u>within a single application</u>, where these tasks can be partially 
+parallelized—meaning they can be "assembled" into a DAG of interconnected tasks for more efficient resource utilization 
+and faster overall application performance. 
+
+E.g. 
+- In event-driven systems a DAG can be used to determine the order 
+of event processing. For instance, event A may trigger the processing of event B and C, which in turn initiates event D.
+```
+            - B -      
+          /       \   
+     A --          -- D -- End
+          \       /   
+            - C -      
+```
+- IN data processing, consider an application that loads 3 files from an external source and then, based on the data from all 5 files, 
+calculates 2 data marts, the data from which is then aggregated into a final unified report. In this example, we essentially have a DAG:
+(loading 5 files in parallel) → (calculating 2 data marts in parallel) → (calculating the final report).
+```
+            - file1 -       - report1 -
+          /           \   /             \   
+ Start --   - file2 -  ---                -- aggregation -- End
+          \           /   \             /
+            - file3 -       - report2 -
+```
 
 ## Features
 
 - **Task Management**: Add tasks with specified dependencies.
-- **Execution Control**: Execute the entire DAG and manage task execution order based on dependencies.
 - **Flexibility**: Execute only specific tasks of DAG keeping all dependencies.
 - **Error Handling**: Built-in error handling for task execution failures. Propagates the original (initial) exception upwards for easier analysis.
 - **DAG Structure printing**: Prints the info about structure of the DAG for better understanding and debugging.
-- **Implicit conversion**: Implicit conversion of the result of the task: `T -> Option[T]`, `None -> Option[T]` and `Unit -> Option[T]` for clearer code 
+- **Implicit conversion**: Implicit conversion of the result of the task: `T -> Option[T]` and `Unit ->  None` for clearer code.
 
 
 ## Limitations
 
-- all tasks should return the results with the same type or ```None```.
+- all tasks should return the results with the same type `T`, `Union` or ```None```.
 
 
 ## Installation
@@ -32,9 +58,8 @@ libraryDependencies += "com.github.ninilich" %% "dag-executor_2.12" % version //
 
 ## Usage
 
-> It is recommended to configure logger (if you need it) using  ```logback.xml``` file, similar to the setup in this repository, to include task name information
-> (`DagTaskName`) in the logs (which is especially important when tasks are executed concurrently).
-> Additionally, configuring the logger to include the Mapped Diagnostic Context (MDC) with key `DagTaskName` (default value, could be redefined)
+> It is recommended to configure logger (if you need it) using  ```logback.xml``` file, similar to the setup in this repository - 
+> configuring the logger to include the Mapped Diagnostic Context (MDC) with key `DagTaskName` (default value, could be redefined)
 > during instantiating DAG) will help with tracing and debugging the task execution flow more effectively. E.g.
 > ```xml
 > <encoder>
@@ -51,13 +76,21 @@ import scala.concurrent.duration.Duration
 // Define your tasks
 val task1 = new RunnableDAGTask[String] {
   override def run(): Option[String] = {
+    // using implicit conversion Unit -> None
     println("Some text")
   }
 }
 
 val task2 = new RunnableDAGTask[String] {
   override def run(): Option[String] = {
-    Some("Some text")
+    // using implicit conversion String -> Option[String]
+    "Some text"
+  }
+}
+
+val task3 = new RunnableDAGTask[String] {
+  override def run(): Option[String] = {
+    Some("Another output text")
   }
 }
 
@@ -66,17 +99,26 @@ val dag = new DAG[String](maxThreads = 4, awaitTime = Duration(10, "seconds"))
 
 // Add tasks with dependencies
 dag.addTask("Task1", task1)
-dag.addTask("Task2", task2, dependencyNames = List("Task1"))
+dag.addTask("Task2", task2, List("Task1"))
+dag.addTask("Task3", task3, List("Task1"))
+
+/* DAG:
+                - t2 -
+               /       \
+     Start -- t1        -- End
+               \       /
+                - t3 -
+ */
 
 // Execute the DAG
 val results = dag.execute()
 
 // Print the results
-results.foreach { case TaskExecutionResult(name, success, duration, output) =>
-  if (success) {
+results.foreach { case TaskExecutionResult(name, isExecuted, duration, output) =>
+  if (isExecuted) {
     println(s"Executed $name in $duration seconds with result: $output")
   } else {
-    println(s"Task $name failed")
+    println(s"Task $name was skipped")
   }
 }
 
